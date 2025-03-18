@@ -1,4 +1,3 @@
-print("hello")
 import paramiko
 # Informations de connexion
 hostname = "127.0.0.1"  
