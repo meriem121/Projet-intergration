@@ -1,9 +1,9 @@
 import paramiko
 # Informations de connexion
-hostname = "127.0.0.1"  
-port = 2222             
-username = "meriem"     
-password = "Password1234"  
+hostname = "192.168.43.112"  
+port = 22             
+username = "chaima"     
+password = "chaima2003"  
 
 # Créer une instance SSHClient
 ssh = paramiko.SSHClient()
