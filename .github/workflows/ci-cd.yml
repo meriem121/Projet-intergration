@@ -23,7 +23,7 @@ jobs:
         run: |
           python -m unittest discover tests/
 
-      - name: Build Docker image
+      - name: Build Docker image 
         run: |
           docker build -t your-dockerhub-meriem927/sysmonitor:latest
 
