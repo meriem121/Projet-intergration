@@ -49,6 +49,6 @@ jobs:
         with:
           context: .  # Contexte du build (répertoire courant)
           push: true  # Pousse l'image vers Docker Hub
-          tags: |
+        tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/mon-app:latest  # Tag 'latest' pour la dernière version
             ${{ secrets.DOCKERHUB_USERNAME }}/mon-app:${{ github.sha }}  # Tag basé sur le hash du commit actuel
