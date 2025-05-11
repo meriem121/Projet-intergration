@@ -32,4 +32,4 @@ jobs:
     - name: Verify environment
       run: |
         python --version
-        pip list
+        pip list 
