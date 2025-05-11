@@ -1,4 +1,4 @@
-import paramiko
+ import paramiko
 import time
 from datetime import datetime
 
@@ -85,4 +85,4 @@ except Exception as e:
 finally:
     # Fermer la connexion SSH
     ssh.close()
-    print("Connexion SSH fermée.")
+    print("Connexion SSH fermée.") 
