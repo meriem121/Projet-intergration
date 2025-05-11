@@ -3,6 +3,8 @@
    import paramiko
 import time
 from datetime import datetime
+def test_add():
+      assert 1+1==2
 
 # Informations de connexion
 hostname = "192.168.43.112"  
