@@ -90,7 +90,3 @@ def main():
         print("Connexion SSH fermée.")
 if __name__ == "__main__":
     main()
-      
- 
-
-
