@@ -51,4 +51,4 @@ jobs:
           push: true  # Pousse l'image vers Docker Hub
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/mon-app:latest  # Tag 'latest' pour la dernière version
-            ${{ secrets.DOCKERHUB_USERNAME }}/mon-app:${{ github.sha }}  # Tag basé sur le_
+            ${{ secrets.DOCKERHUB_USERNAME }}/mon-app:${{ github.sha }}  # Tag basé sur le hash du commit actuel
