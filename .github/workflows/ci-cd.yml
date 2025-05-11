@@ -2,9 +2,9 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
-    branches: [ master ]
+    branches: [master]
 
 jobs:
   test:
@@ -13,7 +13,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Set up Python
+    - name: Set up Python 3.10
       uses: actions/setup-python@v4
       with:
         python-version: '3.10'
@@ -24,22 +24,32 @@ jobs:
         if [ -f requirements.txt ]; then
           pip install -r requirements.txt
         else
-          echo "⚠️ requirements.txt not found. Installing default packages..."
+          echo " requirements.txt non trouvé. Installation des dépendances par défaut..."
           pip install pytest paramiko
         fi
 
-    - name: Verify environment
+    - name: Execute app.py
       run: |
-        python --version
-        pip list
+        echo "=== Début de l'exécution de app.py ==="
+        if [ -f "app.py" ]; then
+          python app.py
+          EXIT_CODE=$?
+          if [ $EXIT_CODE -ne 0 ]; then
+            echo " app.py a terminé avec le code d'erreur $EXIT_CODE"
+          else
+            echo " app.py exécuté avec succès"
+          fi
+        else
+          echo " Fichier app.py non trouvé"
+          exit 1
+        fi
+        echo "=== Fin de l'exécution ==="
 
     - name: Run tests
+      if: success()  # Ne s'exécute que si app.py a réussi
       run: |
         if [ -d "tests" ]; then
           pytest tests/ -v
         else
-          echo "⚠️ No tests directory found. Creating sample test..."
-          mkdir -p tests
-          echo "def test_example(): assert True" > tests/test_sample.py
-          pytest tests/ -v
+          echo "ℹ Aucun dossier tests trouvé - étape ignorée"
         fi
