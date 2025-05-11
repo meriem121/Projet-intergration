@@ -1,6 +1,8 @@
- import paramiko
+import paramiko
 import time
 from datetime import datetime
+def test_add():
+      assert 1+1==2
 
 # Informations de connexion
 hostname = "192.168.43.112"  
@@ -53,7 +55,7 @@ def main():
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
-try:
+    try:
         # Se connecter à la machine virtuelle
         ssh.connect(hostname, port=port, username=username, password=password)
         print(f"\n{datetime.now()} - Connexion SSH établie avec succès")
@@ -76,13 +78,15 @@ try:
             else:
                 print("Option invalide.")
 
-except paramiko.AuthenticationException:
-    print("Échec de l'authentification. Vérifiez vos identifiants.")
-except paramiko.SSHException as e:
-    print(f"Erreur SSH : {e}")
-except Exception as e:
-    print(f"Erreur : {e}")
-finally:
-    # Fermer la connexion SSH
-    ssh.close()
-    print("Connexion SSH fermée.") 
+    except paramiko.AuthenticationException:
+        print("Échec de l'authentification. Vérifiez vos identifiants.")
+    except paramiko.SSHException as e:
+        print(f"Erreur SSH : {e}")
+    except Exception as e:
+        print(f"Erreur : {e}")
+    finally:
+        # Fermer la connexion SSH
+        ssh.close()
+        print("Connexion SSH fermée.")
+if __name__ == "__main__":
+    main()
