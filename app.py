@@ -88,7 +88,6 @@ def main():
         # Fermer la connexion SSH
         ssh.close()
         print("Connexion SSH fermée.")
-
 if __name__ == "__main__":
     main()
  
