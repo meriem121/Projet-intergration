@@ -35,4 +35,4 @@ jobs:
           
       - name: Push Docker image
         run: |
-          docker push your-dockerhub-meriem927/sysmonitor:latest
+          docker push your-dockerhub-meriem927/sysmonitor:latest   
