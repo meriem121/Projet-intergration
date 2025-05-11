@@ -1,6 +1,6 @@
 # Système de Surveillance et d'Administration à Distance
 
-## 📌 Description
+##  Description
 Outil Python pour surveiller et administrer des machines distantes via SSH, avec les fonctionnalités suivantes :
 - Surveillance des processus système
 - Analyse de l'espace disque
