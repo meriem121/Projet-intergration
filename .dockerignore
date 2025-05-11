@@ -1,34 +1,51 @@
-# Include any files or directories that you don't want to be copied to your
-# container here (e.g., local build artifacts, temporary files, etc.).
-#
-# For more help, visit the .dockerignore file reference guide at
-# https://docs.docker.com/go/build-context-dockerignore/
+# .dockerignore - Optimisé pour le projet de surveillance système
 
+### Fichiers système et IDE ###
 **/.DS_Store
-**/__pycache__
-**/.venv
-**/.classpath
-**/.dockerignore
-**/.env
-**/.git
+**/.vscode/
+**/*.swp
+
+### Environnements Python ###
+**/venv/
+**/.venv/
+**/env/
+
+### Cache et compilation Python ###
+**/__pycache__/
+**/*.py[cod]
+**/*.pyd
+**/*.so
+
+### Outils de développement ###
+**/.idea/
+**/*.iml
+
+### Version control ###
+**/.git/
 **/.gitignore
-**/.project
-**/.settings
-**/.toolstarget
-**/.vs
-**/.vscode
-**/*.*proj.user
-**/*.dbmdl
-**/*.jfm
-**/bin
-**/charts
+**/.gitattributes
+
+### Fichiers de tests et build ###
+**/.pytest_cache/
+**/dist/
+**/build/
+**/*.egg-info/
+
+### Fichiers de configuration ###
+**/.env
+**/secrets.*
+**/config.local.*
+
+### Fichiers temporaires ###
+**/*.log
+**/*.tmp
+**/*~
+
+### Documentation ###
+# Conserver README.md si nécessaire pour le conteneur
+# LICENSE
+
+### Fichiers spécifiques au projet ###
+**/compose.yaml
 **/docker-compose*
-**/compose.y*ml
-**/Dockerfile*
-**/node_modules 
-**/npm-debug.log
-**/obj
-**/secrets.dev.yaml
-**/values.dev.yaml
-LICENSE
-README.md
+**/test_exemple.py  # À exclure si seulement utilisé pour les tests CI
