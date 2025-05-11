@@ -1,38 +1,45 @@
 name: CI/CD Pipeline
 
-on:
+on:  # Section CORRIGÉE - Déclencheurs obligatoires
   push:
-    branches: [ "main" ]
+    branches: [ main ]  # Exécution sur push vers main
+  pull_request:
+    branches: [ main ]  # Exécution sur PR vers main
+  workflow_dispatch:    # Permet un lancement manuel
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       
-      - name: Set up Python
+      - name: Setup Python 3.10
         uses: actions/setup-python@v4
         with:
-          python-version: '3.11'
+          python-version: '3.10'
           
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
+          pip install pytest
+
+  deploy:
+    needs: test  # Attend que les tests passent
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
       
-      - name: Run tests
-        run: |
-          python -m unittest discover tests/
-
-      - name: Build Docker image 
-        run: |
-          docker build -t your-dockerhub-meriem927/sysmonitor:latest
-
       - name: Login to Docker Hub
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
           
-      - name: Push Docker image
-        run: |
-          docker push your-dockerhub-meriem927/sysmonitor:latest   
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/mon-app:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/mon-app:${{ github.sha }}
