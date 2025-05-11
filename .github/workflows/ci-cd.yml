@@ -2,9 +2,9 @@ name: Python CI/CD Pipeline
 
 on:
   push:
-    branches: [ main ]  # Déclenchement sur push vers la branche main
+    branches: [ push ]  # Déclenchement sur push vers la branche main
   pull_request:
-    branches: [ main ]  # Déclenchement sur PR vers main
+    branches: [ push]  # Déclenchement sur PR vers main
   workflow_dispatch:    # Permet un lancement manuel via l'interface GitHub
 
 jobs:
