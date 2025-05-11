@@ -1,22 +1,19 @@
-### Building and running your application
+# Système de Surveillance et d'Administration à Distance
 
-When you're ready, start your application by running:
-`docker compose up --build`.
+## 📌 Description
+Outil Python pour surveiller et administrer des machines distantes via SSH, avec les fonctionnalités suivantes :
+- Surveillance des processus système
+- Analyse de l'espace disque
+- Gestion des services (redémarrage/arrêt)
+- Consultation des logs système
 
-Your application will be available at http://localhost:8000.
-
-### Deploying your application to the cloud
-
-First, build your image, e.g.: `docker build -t myapp .`.
-If your cloud uses a different CPU architecture than your development
-machine (e.g., you are on a Mac M1 and your cloud provider is amd64),
-you'll want to build the image for that platform, e.g.:
-`docker build --platform=linux/amd64 -t myapp .`.
-
-Then, push it to your registry, e.g. `docker push myregistry.com/myapp`.
-
-Consult Docker's [getting started](https://docs.docker.com/go/get-started-sharing/)
-docs for more detail on building and pushing.
-
-### References
-* [Docker's Python guide](https://docs.docker.com/language/python/)
+## 🛠 Prérequis
+- Python 3.8+
+- Packages requis :
+  ```bash
+  pip install paramiko
+ # Docker
+docker run --rm yourusername/system-monitor \
+  --host <IP> \
+  --user <USER> \
+  --password <PASSWORD> 
