@@ -23,6 +23,15 @@ jobs:
         run: |
           pip install --upgrade pip  # Met à jour pip pour éviter des erreurs liées à une ancienne version
           pip install -r requirements.txt  # Installe les dépendances spécifiées dans requirements.txt
+          - name: Print Python version
+  run: python --version
+
+- name: Print pip version
+  run: pip --version
+
+- name: List installed packages
+  run: pip freeze
+
 
       - name: Run tests with pytest
         run: |
