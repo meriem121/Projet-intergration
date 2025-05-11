@@ -24,3 +24,4 @@ jobs:
       - name: Run tests with pytest
         run: |
           pytest -v  # Exécute les tests avec pytest en mode verbeux
+          
