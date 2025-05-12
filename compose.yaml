@@ -2,7 +2,9 @@
 services:
   server:
     build:
-      image: meriem927/projet-integration:latest
+      context: .
+      dockerfile: Dockerfile
+    image:  meriem927/app
     ports:
       - 8000:8000
 

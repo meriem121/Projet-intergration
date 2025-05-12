@@ -5,10 +5,10 @@ def test_add():
       assert 1+1==2
 
 # Informations de connexion
-hostname = "192.168.43.112"  
+hostname = "192.168.0.175"  
 port = 22             
-username = "chaima"     
-password = "chaima2003"  
+username = "administrateur"     
+password = "zomita"  
 
 # Fonction pour surveiller les processus
 def surveiller_processus(ssh):
