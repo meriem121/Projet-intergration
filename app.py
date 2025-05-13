@@ -1,10 +1,6 @@
 import paramiko
 from datetime import datetime
-
-# Configuration de la connexion
-HOTE = "192.168.0.175"
-UTILISATEUR = "administrateur"
-MOT_DE_PASSE = "zomita"
+from getpass import getpass  # Pour la saisie sécurisée du mot de passe
 
 def afficher_menu():
     print("\nMenu Principal:")
@@ -15,10 +11,17 @@ def afficher_menu():
 
 def executer_commande_ssh(ssh, commande):
     """Exécute une commande via SSH et affiche le résultat"""
-    entrees, sortie, erreur = ssh.exec_command(commande)
-    print(sortie.read().decode('utf-8', errors='replace'))
-    if erreur.read():
-        print("Erreur:", erreur.read().decode('utf-8', errors='replace'))
+    try:
+        stdin, stdout, stderr = ssh.exec_command(commande)
+        output = stdout.read().decode('utf-8', errors='replace')
+        if output:
+            print(output)
+        
+        error = stderr.read().decode('utf-8', errors='replace')
+        if error:
+            print("Erreur:", error)
+    except Exception as e:
+        print(f"Erreur d'exécution: {e}")
 
 def menu_surveillance(ssh):
     while True:
@@ -50,25 +53,30 @@ def menu_admin(ssh):
         if choix == '1':
             executer_commande_ssh(ssh, 'shutdown /r /t 0')
             print("Redémarrage demandé!")
-            break
+            return False  # Indique que la connexion sera coupée
         elif choix == '2':
             executer_commande_ssh(ssh, 'shutdown /s /t 0')
             print("Extinction demandée!")
-            break
+            return False
         elif choix == '3':
-            break
+            return True
         else:
             print("Choix invalide!")
 
 def main():
-    print(f"\nConnexion à {HOTE}...")
+    # Saisie interactive des identifiants
+    hote = input("Adresse IP de la machine: ")
+    utilisateur = input("Nom d'utilisateur: ")
+    mot_de_passe = getpass("Mot de passe: ")
+    
+    print(f"\nConnexion à {hote}...")
     
     try:
         # Connexion SSH
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        ssh.connect(HOTE, username=UTILISATEUR, password=MOT_DE_PASSE)
-        print(f"Connecté à {HOTE} à {datetime.now()}")
+        ssh.connect(hote, username=utilisateur, password=mot_de_passe)
+        print(f"Connecté à {hote} à {datetime.now()}")
         
         while True:
             afficher_menu()
@@ -79,18 +87,26 @@ def main():
             elif choix == '2':
                 executer_commande_ssh(ssh, 'wmic logicaldisk get size,freespace,caption')
             elif choix == '3':
-                menu_admin(ssh)
+                if not menu_admin(ssh):
+                    break  # Quitter si shutdown/reboot demandé
             elif choix == '4':
                 print("Déconnexion...")
                 break
             else:
                 print("Choix invalide!")
                 
+    except paramiko.AuthenticationException:
+        print("Erreur d'authentification: identifiants incorrects")
+    except paramiko.SSHException as e:
+        print(f"Erreur SSH: {e}")
     except Exception as e:
-        print(f"Erreur: {e}")
+        print(f"Erreur inattendue: {e}")
     finally:
-        ssh.close()
-        print("Connexion fermée.")
+        try:
+            ssh.close()
+            print("Connexion fermée.")
+        except:
+            pass
 
 if __name__ == "__main__":
     main()
