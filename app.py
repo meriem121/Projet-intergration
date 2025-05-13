@@ -1,92 +1,96 @@
 import paramiko
-import time
 from datetime import datetime
-def test_add():
-      assert 1+1==2
 
-# Informations de connexion
-hostname = "192.168.0.175"  
-port = 22             
-username = "administrateur"     
-password = "zomita"  
+# Configuration de la connexion
+HOTE = "192.168.0.175"
+UTILISATEUR = "administrateur"
+MOT_DE_PASSE = "zomita"
 
-# Fonction pour surveiller les processus
-def surveiller_processus(ssh):
-    stdin, stdout, stderr = ssh.exec_command('top -bn1 | head -n 5')
-    print("\n=== Surveillance des processus ===")
-    print(stdout.read().decode())
+def afficher_menu():
+    print("\nMenu Principal:")
+    print("1. Voir les processus en cours")
+    print("2. Voir l'espace disque")
+    print("3. Options d'administration")
+    print("4. Quitter")
 
-# Fonction pour surveiller l'espace disque
-def surveiller_espace_disque(ssh):
-    stdin, stdout, stderr = ssh.exec_command('df -h')
-    print("\n=== Surveillance de l'espace disque ===")
-    print(stdout.read().decode())
+def executer_commande_ssh(ssh, commande):
+    """Exécute une commande via SSH et affiche le résultat"""
+    entrees, sortie, erreur = ssh.exec_command(commande)
+    print(sortie.read().decode('utf-8', errors='replace'))
+    if erreur.read():
+        print("Erreur:", erreur.read().decode('utf-8', errors='replace'))
 
-# Fonction pour exécuter des commandes d'administration
-def executer_commande_admin(ssh):
+def menu_surveillance(ssh):
     while True:
-        print("\nOptions d'administration:")
-        print("1. Redémarrer le serveur")
-        print("2. Arrêter le serveur")
-        print("3. Voir les logs système")
-        print("4. Quitter")
+        print("\nSurveillance système:")
+        print("1. Liste des processus (tasklist)")
+        print("2. Espace disque (wmic)")
+        print("3. Retour")
         
-        choix = input("Choisissez une option (1-4): ")
+        choix = input("Votre choix (1-3): ")
         
         if choix == '1':
-            ssh.exec_command('sudo reboot')
-            print("Commande de redémarrage envoyée.")
-            return
+            executer_commande_ssh(ssh, 'tasklist')
         elif choix == '2':
-            ssh.exec_command('sudo shutdown -h now')
-            print("Commande d'arrêt envoyée.")
-            return
+            executer_commande_ssh(ssh, 'wmic logicaldisk get size,freespace,caption')
         elif choix == '3':
-            stdin, stdout, stderr = ssh.exec_command('tail -n 20 /var/log/syslog')
-            print(stdout.read().decode())
-        elif choix == '4':
-            return
+            break
         else:
-            print("Option invalide.")
+            print("Choix invalide!")
 
-# Fonction principale
+def menu_admin(ssh):
+    while True:
+        print("\nAdministration:")
+        print("1. Redémarrer")
+        print("2. Éteindre")
+        print("3. Retour")
+        
+        choix = input("Votre choix (1-3): ")
+        
+        if choix == '1':
+            executer_commande_ssh(ssh, 'shutdown /r /t 0')
+            print("Redémarrage demandé!")
+            break
+        elif choix == '2':
+            executer_commande_ssh(ssh, 'shutdown /s /t 0')
+            print("Extinction demandée!")
+            break
+        elif choix == '3':
+            break
+        else:
+            print("Choix invalide!")
+
 def main():
-    # Créer une instance SSHClient
-    ssh = paramiko.SSHClient()
-    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-
+    print(f"\nConnexion à {HOTE}...")
+    
     try:
-        # Se connecter à la machine virtuelle
-        ssh.connect(hostname, port=port, username=username, password=password)
-        print(f"\n{datetime.now()} - Connexion SSH établie avec succès")
-
+        # Connexion SSH
+        ssh = paramiko.SSHClient()
+        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        ssh.connect(HOTE, username=UTILISATEUR, password=MOT_DE_PASSE)
+        print(f"Connecté à {HOTE} à {datetime.now()}")
+        
         while True:
-            print("\nMenu Principal:")
-            print("1. Surveillance système")
-            print("2. Administration")
-            print("3. Quitter")
-            
-            choix = input("Choisissez une option (1-3): ")
+            afficher_menu()
+            choix = input("Votre choix (1-4): ")
             
             if choix == '1':
-                surveiller_processus(ssh)
-                surveiller_espace_disque(ssh)
+                executer_commande_ssh(ssh, 'tasklist')
             elif choix == '2':
-                executer_commande_admin(ssh)
+                executer_commande_ssh(ssh, 'wmic logicaldisk get size,freespace,caption')
             elif choix == '3':
+                menu_admin(ssh)
+            elif choix == '4':
+                print("Déconnexion...")
                 break
             else:
-                print("Option invalide.")
-
-    except paramiko.AuthenticationException:
-        print("Échec de l'authentification. Vérifiez vos identifiants.")
-    except paramiko.SSHException as e:
-        print(f"Erreur SSH : {e}")
+                print("Choix invalide!")
+                
     except Exception as e:
-        print(f"Erreur : {e}")
+        print(f"Erreur: {e}")
     finally:
-        # Fermer la connexion SSH
         ssh.close()
-        print("Connexion SSH fermée.")
+        print("Connexion fermée.")
+
 if __name__ == "__main__":
     main()
