@@ -1,6 +1,7 @@
 import paramiko
 from datetime import datetime
-from getpass import getpass  # Pour la saisie sécurisée du mot de passe
+import os
+import sys
 
 def afficher_menu():
     print("\nMenu Principal:")
@@ -23,51 +24,16 @@ def executer_commande_ssh(ssh, commande):
     except Exception as e:
         print(f"Erreur d'exécution: {e}")
 
-def menu_surveillance(ssh):
-    while True:
-        print("\nSurveillance système:")
-        print("1. Liste des processus (tasklist)")
-        print("2. Espace disque (wmic)")
-        print("3. Retour")
-        
-        choix = input("Votre choix (1-3): ")
-        
-        if choix == '1':
-            executer_commande_ssh(ssh, 'tasklist')
-        elif choix == '2':
-            executer_commande_ssh(ssh, 'wmic logicaldisk get size,freespace,caption')
-        elif choix == '3':
-            break
-        else:
-            print("Choix invalide!")
-
-def menu_admin(ssh):
-    while True:
-        print("\nAdministration:")
-        print("1. Redémarrer")
-        print("2. Éteindre")
-        print("3. Retour")
-        
-        choix = input("Votre choix (1-3): ")
-        
-        if choix == '1':
-            executer_commande_ssh(ssh, 'shutdown /r /t 0')
-            print("Redémarrage demandé!")
-            return False  # Indique que la connexion sera coupée
-        elif choix == '2':
-            executer_commande_ssh(ssh, 'shutdown /s /t 0')
-            print("Extinction demandée!")
-            return False
-        elif choix == '3':
-            return True
-        else:
-            print("Choix invalide!")
-
 def main():
-    # Saisie interactive des identifiants
-    hote = input("Adresse IP de la machine: ")
-    utilisateur = input("Nom d'utilisateur: ")
-    mot_de_passe = getpass("Mot de passe: ")
+    # Récupération des variables d'environnement
+    hote = os.getenv('SSH_HOST')
+    utilisateur = os.getenv('SSH_USER')
+    mot_de_passe = os.getenv('SSH_PASSWORD')
+    
+    if not all([hote, utilisateur, mot_de_passe]):
+        print("Variables d'environnement manquantes!")
+        print("Veuillez définir SSH_HOST, SSH_USER et SSH_PASSWORD")
+        sys.exit(1)
     
     print(f"\nConnexion à {hote}...")
     
@@ -78,29 +44,20 @@ def main():
         ssh.connect(hote, username=utilisateur, password=mot_de_passe)
         print(f"Connecté à {hote} à {datetime.now()}")
         
-        while True:
-            afficher_menu()
-            choix = input("Votre choix (1-4): ")
-            
-            if choix == '1':
-                executer_commande_ssh(ssh, 'tasklist')
-            elif choix == '2':
-                executer_commande_ssh(ssh, 'wmic logicaldisk get size,freespace,caption')
-            elif choix == '3':
-                if not menu_admin(ssh):
-                    break  # Quitter si shutdown/reboot demandé
-            elif choix == '4':
-                print("Déconnexion...")
-                break
-            else:
-                print("Choix invalide!")
+        # Exécution automatique pour CI/CD
+        print("\nExécution des commandes de vérification...")
+        executer_commande_ssh(ssh, 'tasklist')
+        executer_commande_ssh(ssh, 'wmic logicaldisk get size,freespace,caption')
                 
     except paramiko.AuthenticationException:
         print("Erreur d'authentification: identifiants incorrects")
+        sys.exit(1)
     except paramiko.SSHException as e:
         print(f"Erreur SSH: {e}")
+        sys.exit(1)
     except Exception as e:
         print(f"Erreur inattendue: {e}")
+        sys.exit(1)
     finally:
         try:
             ssh.close()
