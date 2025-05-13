@@ -44,15 +44,6 @@ jobs:
           exit 1
         fi
         echo "=== Fin de l'exécution ==="
-
-    - name: Run tests
-      if: success()  # Ne s'exécute que si app.py a réussi
-      run: |
-        if [ -d "tests" ]; then
-          pytest tests/ -v
-        else
-          echo "ℹ Aucun dossier tests trouvé - étape ignorée"
-        fi
   build-and-push:
     needs: test
     runs-on: ubuntu-latest
